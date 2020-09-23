@@ -1250,7 +1250,7 @@ class Entity(HTTPBase):
         self.artifact[saml_art] = message
         return saml_art
 
-    def artifact2destination(self, artifact, descriptor):
+    def artifact2destination(self, artifact, descriptor, custom_eid_map={}):
         """
         Translate an artifact into a receiver location
 
@@ -1266,7 +1266,11 @@ class Entity(HTTPBase):
             endpoint_index = str(int(_art[2:4]))
         except ValueError:
             endpoint_index = str(int(hexlify(_art[2:4])))
-        entity = self.sourceid[_art[4:24]]
+        
+        eid_hash = _art[4:24]
+        if custom_eid_map.get(eid_hash, None):
+            eid_hash = custom_eid_map[eid_hash]
+        entity = self.sourceid[eid_hash]
 
         destination = None
         for desc in entity["%s_descriptor" % descriptor]:
@@ -1277,7 +1281,7 @@ class Entity(HTTPBase):
 
         return destination
 
-    def artifact2message(self, artifact, descriptor, sign=False):
+    def artifact2message(self, artifact, descriptor, sign=False, custom_eid_map=None):
         """
 
         :param artifact: The Base64 encoded SAML artifact as sent over the net
@@ -1286,7 +1290,7 @@ class Entity(HTTPBase):
         :return: A SAML message (request/response)
         """
 
-        destination = self.artifact2destination(artifact, descriptor)
+        destination = self.artifact2destination(artifact, descriptor, custom_eid_map=custom_eid_map)
 
         if not destination:
             raise SAMLError("Missing endpoint location")
