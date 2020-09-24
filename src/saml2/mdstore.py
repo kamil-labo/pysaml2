@@ -654,8 +654,8 @@ class InMemoryMetaData(MetaData):
                         if "artifact_resolution_service" in srv:
                             if isinstance(eid, six.string_types):
                                 eid = eid.encode('utf-8')
-                            s = sha1(eid).digest()
-                            res[s] = ent
+                            s = sha1(eid)
+                            res[s.digest()] = ent
                 except KeyError:
                     pass
         return res
@@ -780,7 +780,6 @@ class MetaDataExtern(InMemoryMetaData):
 
         self.security = security
         self.http = http
-
 
     def load(self, *args, **kwargs):
         """ Imports metadata by the use of HTTP GET.
@@ -981,7 +980,6 @@ class MetadataStore(MetaData):
             if "cert" not in kwargs:
                 kwargs["cert"] = ""
             
-
             _md = MetaDataExtern(self.attrc,
                                  kwargs["url"], self.security,
                                  kwargs["cert"], self.http, **_args)
