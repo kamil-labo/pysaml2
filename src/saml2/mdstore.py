@@ -658,6 +658,7 @@ class InMemoryMetaData(MetaData):
                             res[s.digest()] = ent
                 except KeyError:
                     pass
+
         return res
 
     def signed(self):
@@ -979,7 +980,7 @@ class MetadataStore(MetaData):
 
             if "cert" not in kwargs:
                 kwargs["cert"] = ""
-            
+
             _md = MetaDataExtern(self.attrc,
                                  kwargs["url"], self.security,
                                  kwargs["cert"], self.http, **_args)
